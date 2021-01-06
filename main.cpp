@@ -7,12 +7,21 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include <windows.h>      //usada para reproduzir sons de fundo
+#include <mmsystem.h>    //usada para reproduzir sons de fundo
+
+#define STB_IMAGE_IMPLEMENTATION//usada para carregar textura das imagens
+#include "stb_image.h" //usada para carregar textura das imagens
+
 #include <stdio.h>
 #include <stdlib.h>
 #include<math.h>
 #include <ctime>
 
 #define pi 3.142857
+
+double rotate_x = 0;
+double rotate_y = 0;
 
 // Posição inicial e tamanho do quadrado respectivamente
 // GLfloat glx1 = 100.0f;
@@ -39,8 +48,20 @@ int esquerda = -5, direita = 5, movimento = 0, ponto = 0, velocidade = 100;
 /* Funcao com alguns comandos para a inicializacao do OpenGL; */
 void init(void)
 {
+	// PlaySound(TEXT("sound/background.wav"), NULL, SND_ASYNC | SND_LOOP);  //Inicia o áudio de fundo do jogo
 	glClearColor (1.0, 1.0, 1.0, 1.0); //Limpa a tela com a cor branca;
 	glEnable(GL_DEPTH_TEST); // Habilita o algoritmo Z-Buffer
+
+	// glEnable(GL_FOG);
+	// glEnable(GL_COLOR_MATERIAL);// Habilita a definicao da cor do material(objeto) a partir da cor corrente
+	// glEnable(GL_LIGHTING); 	//Habilita o uso de iluminacao
+	// glEnable(GL_LIGHT0);	// Habilita a luz de numero 0
+	// glEnable(GL_DEPTH_TEST);  // Habilita o depth-buffering
+	// glEnable(GL_BLEND); //Exibe os valores de cores do fragmento computado com os valores nos buffers de cores.
+	// /* Activa o modelo de sombreagem de "Gouraud". */
+	// glShadeModel( GL_SMOOTH );
+	glEnable(GL_TEXTURE_2D);//ativa o modo textura 2D
+
 }
 
 void reshape (int w, int h)
@@ -95,6 +116,26 @@ void keyboard (unsigned char key, int x, int y)
 		// }
 		glutPostRedisplay();
 		break;
+	case 'w':
+		rotate_y += 5;
+		glutPostRedisplay();
+		break;
+
+		//  Rotacao 5 graus direita
+	case 's':
+		rotate_y -= 5;
+		glutPostRedisplay();
+		break;
+
+	case 'a': //Rotacao 5 graus cima
+		rotate_x += 5;
+		glutPostRedisplay();
+		break;
+
+	case 'd'://Rotacao 5 graus baixo
+		rotate_x -= 5;
+		glutPostRedisplay();
+		break;
 	case 27:
 		exit(0);
 		break;
@@ -103,8 +144,118 @@ void keyboard (unsigned char key, int x, int y)
 	}
 }
 
+void criaCubo(float x)
+{
+	// Desenhas as linhas das "bordas" do cubo
+	glColor3f(0.0f, 0.0f, 0.0f);
+	glLineWidth(1.6f);
+	glBegin(GL_LINE_LOOP);	// frontal
+	glVertex3f(x, x, x);
+	glVertex3f(-x, x, x);
+	glVertex3f(-x, -x, x);
+	glVertex3f(x, -x, x);
+	glEnd();
+	glBegin(GL_LINE_LOOP);	//  posterior
+	glVertex3f(x, x, -x);
+	glVertex3f(x, -x, -x);
+	glVertex3f(-x, -x, -x);
+	glVertex3f(-x, x, -x);
+	glEnd();
+	glBegin(GL_LINES);	//  laterais
+	glVertex3f(-x, x, -x);
+	glVertex3f(-x, x, x);
+	glVertex3f(-x, -x, -x);
+	glVertex3f(-x, -x, x);
+	glVertex3f(x, x, -x);
+	glVertex3f(x, x, x);
+	glVertex3f(x, -x, -x);
+	glVertex3f(x, -x, x);
+	glEnd();
+
+	// Desenha as faces do cubo preenchidas
+	// Face frontal
+	glBegin(GL_QUADS);
+	glNormal3f(0.0, 0.0, 1.0);	// Normal da face
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glVertex3f(x, x, x);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-x, x, x);
+	glColor3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(-x, -x, x);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(x, -x, x);
+	// Face posterior
+	glNormal3f(0.0, 0.0, -1.0);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(x, x, -x);
+
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(x, -x, -x);
+
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-x, -x, -x);
+
+	glColor3f(0.0f, 1.0f, 1.0f);
+	glVertex3f(-x, x, -x);
+
+	// Face lateral esquerda
+	glNormal3f(-1.0, 0.0, 0.0);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-x, x, x);
+
+	glColor3f(0.0f, 1.0f, 1.0f);
+	glVertex3f(-x, x, -x);
+
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-x, -x, -x);
+
+	glColor3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(-x, -x, x);
+
+	// Face lateral direita
+	glNormal3f(1.0, 0.0, 0.0);
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glVertex3f(x, x, x);
+
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(x, -x, x);
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(x, -x, -x);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(x, x, -x);
+	// Face superior
+	glNormal3f(0.0, 1.0, 0.0);
+	glColor3f(0.0f, 1.0f, 1.0f);
+	glVertex3f(-x, x, -x);
+
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-x, x, x);
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glVertex3f(x, x, x);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(x, x, -x);
+
+	glNormal3f(0.0, -1.0, 0.0);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(-x, -x, -x);
+	glTexCoord2f(1, 0); //atribui coordenada de textura ao objeto
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(x, -x, -x);
+	glTexCoord2f(1, 1);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(x, -x, x);
+	glTexCoord2f(0, 1);
+	glColor3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(-x, -x, x);
+	glTexCoord2f(0, 0);
+	glEnd();
+}
+
 void display(void)
 {
+	glRotatef( rotate_x, 0.0, 0.0, 1.0 );
+	glRotatef( rotate_y, 0.0, 1.0, 0.0 );
+	
 	if(inicio)
 	{
 		posx = 0;
@@ -127,19 +278,42 @@ void display(void)
 	//         R     G     B
 	glColor3f(1.0f, 0.0f, 0.0f);
 
+	// arena
+	
+	GLuint texture1, texture2;
+	int w, h;
+	
+	unsigned char * uc = stbi_load("textures/cubo.jpg", & w, & h, NULL, 0);
+	glGenTextures(1, & texture1); //gera nomes identificadores de texturas
+	glBindTexture(GL_TEXTURE_2D, texture1); //Ativa a textura atual
+
+	// Cria a textura lateral de cada bloco
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h,
+				 0, GL_RGB, GL_UNSIGNED_BYTE, uc);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
 	// Desenha um quadrado preenchido com a cor corrente (3d)
 	glTranslatef( 0, 5, -8 );	// ...move back and down a bit
 	// Drawing the cube
 	glBegin(GL_QUADS);		// using quadrilaterals as primitive
 	// Front
 	glColor3f( 0, 1, 0 );		// set colour to pure green
+	glNormal3f(0.0, 0.0, 1.0);
 	glVertex3f( posx,  posy,  1 );
+	glTexCoord2f(1, 0);
 	glVertex3f( posx,  posy + 2,  1 );
+	glTexCoord2f(1, 1);
 	glVertex3f( posx + 2,  posy + 2,  1 );
+	glTexCoord2f(0, 1);
 	glVertex3f( posx + 2,  posy,  1 );
+	glTexCoord2f(0, 0);
 
 	// Back
 	glColor3f( 0, 0.8, 0 );		// a slightly darker green for the back
+	glNormal3f(0.0, 0.0, -1.0);
 	glVertex3f( posx,  posy, -1 );
 	glVertex3f( posx + 2,  posy, -1 );
 	glVertex3f( posx + 2,  posy + 2, -1 );
@@ -147,35 +321,63 @@ void display(void)
 
 	// Left side
 	glColor3f( 0, 0.6, 0 );		// an even darker shade for the sides
+	glNormal3f(-1.0, 0.0, 0.0);
 	glVertex3f( posx + 2,  posy,  1 );
 	glVertex3f( posx + 2,  posy + 2,  1 );
 	glVertex3f( posx + 2,  posy + 2, -1 );
 	glVertex3f( posx + 2,  posy, -1 );
 
 	// Right side
+	glNormal3f(1.0, 0.0, 0.0);
 	glVertex3f(  posx,  posy,  1 );
 	glVertex3f(  posx,  posy, -1 );
 	glVertex3f(  posx,  posy + 2, -1 );
 	glVertex3f(  posx,  posy + 2,  1 );
 	glEnd();
+	
+	glDeleteTextures(1, & texture1);
+	stbi_image_free(uc);
+	
+	///////////////////////////////////////////
 
 	// Desenha o retangulo que rebate a bola (3d)
+	unsigned char * uc2 = stbi_load("textures/barra.jpg", & w, & h, NULL, 0);
+	glGenTextures(1, & texture2); //gera nomes identificadores de texturas
+	glBindTexture(GL_TEXTURE_2D, texture2); //Ativa a textura atual
+
+	// Cria a textura lateral de cada bloco
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h,
+				 0, GL_RGB, GL_UNSIGNED_BYTE, uc2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	
 	glTranslatef( 0, -10, 0 );	// ...move back and down a bit
 	// Drawing the cube
 	glBegin(GL_QUADS);		// using quadrilaterals as primitive
 	// Front
 	glColor3f( 0, 1, 0 );		// set colour to pure green
+	glNormal3f(0.0, 0.0, 1.0);
 	glVertex3f( movimento,  -3,  1 );
+	glTexCoord2f(1, 0);
 	glVertex3f( movimento,  -4,  1 );
+	glTexCoord2f(1, 1);
 	glVertex3f( movimento + 6,  -4,  1 );
+	glTexCoord2f(0, 1);
 	glVertex3f( movimento + 6,  -3,  1 );
+	glTexCoord2f(0, 0);
 
 	// Back
-	glColor3f( 0, 0.8, 0 );		// a slightly darker green for the back
+	glColor3f( 1, 0.8, 0 );		// a slightly darker green for the back
+	glNormal3f(0.0, 0.0, 1.0);
 	glVertex3f( movimento,  -3, -1 );
+	glTexCoord2f(1, 0);
 	glVertex3f( movimento + 6,  -3, -1 );
+	glTexCoord2f(1, 1);
 	glVertex3f( movimento + 6,  -4, -1 );
+	glTexCoord2f(0, 1);
 	glVertex3f( movimento,  -4, -1 );
+	glTexCoord2f(0, 0);
 
 	// Left side
 	glColor3f( 0, 0.6, 0 );		// an even darker shade for the sides
@@ -190,6 +392,9 @@ void display(void)
 	glVertex3f(  movimento,  -4, -1 );
 	glVertex3f(  movimento,  -4,  1 );
 	glEnd();
+	
+	glDeleteTextures(1, & texture1);
+	stbi_image_free(uc2);
 
 	// Executa os comandos OpenGL
 	glutSwapBuffers();
@@ -205,9 +410,6 @@ void Timer(int value)
 	if(posy > 2 || posy < -12) // limite 2 a -14
 		ystep = -ystep;
 
-// 	tentativa de deixar os movimentos aleatorios
-	
-
 	// identifica falha na colisao com o bloco de baixo
 	if(posy <= -12 && (movimento - 1 > posx || movimento + 6 < posx))
 	{
@@ -217,7 +419,14 @@ void Timer(int value)
 	// identifica colisao com o bloco de baixo e conta +1 ponto
 	if(posy <= -12 && (movimento - 1 < posx && movimento + 6 > posx))
 	{
+		PlaySound(TEXT("sound/pingpong.wav"), NULL, SND_ASYNC);  //Inicia o áudio de rebate da bola
 		ponto += 1;
+
+		// 	tentativa de deixar os movimentos aleatorios
+		// srand(time(NULL));//função para o random
+		// int valorAleatorio = rand() % 2;
+		// if(valorAleatorio == 0) xstep = -xstep;
+		// else xstep = xstep;
 	}
 
 	// Move o quadrado
@@ -226,7 +435,7 @@ void Timer(int value)
 
 	if(ponto == 2)
 	{
-		velocidade -= 5;
+		velocidade -= 2;
 		ponto = 0;
 	}
 
@@ -249,12 +458,31 @@ int main(int argc, char** argv)
 	/* Funcao com alguns comandos para a inicializacao do OpenGL; */
 	init ();
 
+	/* Inicia a iluminação */
+	GLfloat light_position[] = { -1.0, 1.0, 1.0, 0.0};
+	GLfloat light_color[] = {1.0, 1.0, 1.0, 0.0};
+	glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, light_color);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	/* Inicia as características gerais dos materiais */
+	GLfloat mat_ambient_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_ambient_diffuse);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_COLOR_MATERIAL);
+
+	/* Ativa o modelo de sombreagem de "Gouraud". */
+	glShadeModel(GL_SMOOTH);
+
 	/* define as funcões de callback */
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
 	glutTimerFunc(100, Timer, 1);
 	glutMainLoop();
+
+	glDisable(GL_TEXTURE_2D);
 
 	return 0;
 }
