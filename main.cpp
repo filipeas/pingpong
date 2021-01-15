@@ -18,7 +18,7 @@
 #include<math.h>
 #include <ctime>
 
-#define pi 3.142857
+#define tam 6
 
 double rotate_x = 0;
 double rotate_y = 0;
@@ -35,7 +35,7 @@ BOOLEAN inicio = true;
 // (número de pixels para se mover a cada
 // intervalo de tempo)
 GLfloat xstep = 1.0f;
-GLfloat ystep = 1.0f;
+GLfloat ystep = -1.0f;
 
 // Largura e altura da janela
 GLfloat windowWidth;
@@ -43,7 +43,19 @@ GLfloat windowHeight;
 
 // c e d rastreia o número de vezes que 'b' e 'n' são pressionados respectivamente
 // esquerda e direita indicam o índice mais à esquerda e mais à direita do retângulo móvel
-int esquerda = -5, direita = 5, movimento = 0, ponto = 0, velocidade = 100;
+// int esquerda = -5, direita = 5, cima = 5, baixo = 5;
+int movimento = 0, movimento2 = -3, ponto = 10, velocidade = 170;
+
+// blocos para contato e colisão
+struct Bloco
+{
+	float x;
+	float z;
+	float y;
+	bool vivo;
+};
+
+Bloco blocos[tam];
 
 /* Funcao com alguns comandos para a inicializacao do OpenGL; */
 void init(void)
@@ -100,42 +112,29 @@ void keyboard (unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 'b': // esquerda
-		// if(esquerda < windowWidth - rsize){
-		movimento -= 1;
-		esquerda += 1;
-		direita -= 1;
-		// }
+	case 'a': // esquerda
+		if (movimento > -13)
+			movimento -= 1;
 		glutPostRedisplay();
 		break;
-	case 'n': // direita
-		// if(direita > windowWidth - rsize){
-		movimento += 1;
-		esquerda -= 1;
-		direita += 1;
+	case 'd': // direita
+		if (movimento < 7)
+			movimento += 1;
 		// }
 		glutPostRedisplay();
 		break;
 	case 'w':
-		rotate_y += 5;
+		if (movimento2 < 0)
+			movimento2 += 1;
 		glutPostRedisplay();
 		break;
 
-		//  Rotacao 5 graus direita
 	case 's':
-		rotate_y -= 5;
+		if (movimento2 > -3)
+			movimento2 -= 1;
 		glutPostRedisplay();
 		break;
 
-	case 'a': //Rotacao 5 graus cima
-		rotate_x += 5;
-		glutPostRedisplay();
-		break;
-
-	case 'd'://Rotacao 5 graus baixo
-		rotate_x -= 5;
-		glutPostRedisplay();
-		break;
 	case 27:
 		exit(0);
 		break;
@@ -144,8 +143,7 @@ void keyboard (unsigned char key, int x, int y)
 	}
 }
 
-void criaCubo(float x)
-{
+void criaCubo(float x) {
 	// Desenhas as linhas das "bordas" do cubo
 	glColor3f(0.0f, 0.0f, 0.0f);
 	glLineWidth(1.6f);
@@ -176,59 +174,59 @@ void criaCubo(float x)
 	// Face frontal
 	glBegin(GL_QUADS);
 	glNormal3f(0.0, 0.0, 1.0);	// Normal da face
-	glColor3f(1.0f, 1.0f, 0.0f);
+	glColor3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(x, x, x);
-	glColor3f(0.0f, 1.0f, 0.0f);
+	glColor3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(-x, x, x);
-	glColor3f(0.0f, 0.0f, 0.0f);
+	glColor3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(-x, -x, x);
-	glColor3f(1.0f, 0.0f, 0.0f);
+	glColor3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(x, -x, x);
 	// Face posterior
 	glNormal3f(0.0, 0.0, -1.0);
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, x, -x);
 
-	glColor3f(1.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, -x, -x);
 
-	glColor3f(0.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, -x, -x);
 
-	glColor3f(0.0f, 1.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, x, -x);
 
 	// Face lateral esquerda
 	glNormal3f(-1.0, 0.0, 0.0);
-	glColor3f(0.0f, 1.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, x, x);
 
-	glColor3f(0.0f, 1.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, x, -x);
 
-	glColor3f(0.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, -x, -x);
 
-	glColor3f(0.0f, 0.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, -x, x);
 
 	// Face lateral direita
 	glNormal3f(1.0, 0.0, 0.0);
-	glColor3f(1.0f, 1.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, x, x);
 
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, -x, x);
-	glColor3f(1.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, -x, -x);
-	glColor3f(1.0f, 1.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, x, -x);
 	// Face superior
 	glNormal3f(0.0, 1.0, 0.0);
-	glColor3f(0.0f, 1.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, x, -x);
 
-	glColor3f(0.0f, 1.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, x, x);
 	glColor3f(1.0f, 1.0f, 0.0f);
 	glVertex3f(x, x, x);
@@ -236,16 +234,16 @@ void criaCubo(float x)
 	glVertex3f(x, x, -x);
 
 	glNormal3f(0.0, -1.0, 0.0);
-	glColor3f(0.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, -x, -x);
 	glTexCoord2f(1, 0); //atribui coordenada de textura ao objeto
-	glColor3f(1.0f, 0.0f, 1.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, -x, -x);
 	glTexCoord2f(1, 1);
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(x, -x, x);
 	glTexCoord2f(0, 1);
-	glColor3f(0.0f, 0.0f, 0.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
 	glVertex3f(-x, -x, x);
 	glTexCoord2f(0, 0);
 	glEnd();
@@ -255,11 +253,11 @@ void display(void)
 {
 	glRotatef( rotate_x, 0.0, 0.0, 1.0 );
 	glRotatef( rotate_y, 0.0, 1.0, 0.0 );
-	
+
 	if(inicio)
 	{
 		posx = 0;
-		posy = 0;
+		posy = -10;
 		inicio = false;
 	}
 	else
@@ -278,11 +276,13 @@ void display(void)
 	//         R     G     B
 	glColor3f(1.0f, 0.0f, 0.0f);
 
+	////////////////////
+
 	// arena
-	
+
 	GLuint texture1, texture2;
 	int w, h;
-	
+
 	unsigned char * uc = stbi_load("textures/cubo.jpg", & w, & h, NULL, 0);
 	glGenTextures(1, & texture1); //gera nomes identificadores de texturas
 	glBindTexture(GL_TEXTURE_2D, texture1); //Ativa a textura atual
@@ -334,10 +334,10 @@ void display(void)
 	glVertex3f(  posx,  posy + 2, -1 );
 	glVertex3f(  posx,  posy + 2,  1 );
 	glEnd();
-	
+
 	glDeleteTextures(1, & texture1);
 	stbi_image_free(uc);
-	
+
 	///////////////////////////////////////////
 
 	// Desenha o retangulo que rebate a bola (3d)
@@ -351,50 +351,66 @@ void display(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	
+
 	glTranslatef( 0, -10, 0 );	// ...move back and down a bit
 	// Drawing the cube
 	glBegin(GL_QUADS);		// using quadrilaterals as primitive
 	// Front
 	glColor3f( 0, 1, 0 );		// set colour to pure green
 	glNormal3f(0.0, 0.0, 1.0);
-	glVertex3f( movimento,  -3,  1 );
+	glVertex3f( movimento,  movimento2,  1 );
 	glTexCoord2f(1, 0);
-	glVertex3f( movimento,  -4,  1 );
+	glVertex3f( movimento,  movimento2 - 1,  1 );
 	glTexCoord2f(1, 1);
-	glVertex3f( movimento + 6,  -4,  1 );
+	glVertex3f( movimento + 6,  movimento2 - 1,  1 );
 	glTexCoord2f(0, 1);
-	glVertex3f( movimento + 6,  -3,  1 );
+	glVertex3f( movimento + 6,  movimento2,  1 );
 	glTexCoord2f(0, 0);
 
 	// Back
 	glColor3f( 1, 0.8, 0 );		// a slightly darker green for the back
 	glNormal3f(0.0, 0.0, 1.0);
-	glVertex3f( movimento,  -3, -1 );
+	glVertex3f( movimento,  movimento2, -1 );
 	glTexCoord2f(1, 0);
-	glVertex3f( movimento + 6,  -3, -1 );
+	glVertex3f( movimento + 6,  movimento2, -1 );
 	glTexCoord2f(1, 1);
-	glVertex3f( movimento + 6,  -4, -1 );
+	glVertex3f( movimento + 6,  movimento2 - 1, -1 );
 	glTexCoord2f(0, 1);
-	glVertex3f( movimento,  -4, -1 );
+	glVertex3f( movimento,  movimento2 - 1, -1 );
 	glTexCoord2f(0, 0);
 
 	// Left side
 	glColor3f( 0, 0.6, 0 );		// an even darker shade for the sides
-	glVertex3f( movimento + 6,  -3,  1 );
-	glVertex3f( movimento + 6,  -4,  1 );
-	glVertex3f( movimento + 6,  -4, -1 );
-	glVertex3f( movimento + 6,  -3, -1 );
+	glVertex3f( movimento + 6,  movimento2,  1 );
+	glVertex3f( movimento + 6,  movimento2 - 1,  1 );
+	glVertex3f( movimento + 6,  movimento2 - 1, -1 );
+	glVertex3f( movimento + 6,  movimento2, -1 );
 
 	// Right side
-	glVertex3f(  movimento,  -3,  1 );
-	glVertex3f(  movimento,  -3, -1 );
-	glVertex3f(  movimento,  -4, -1 );
-	glVertex3f(  movimento,  -4,  1 );
+	glVertex3f(  movimento,  movimento2,  1 );
+	glVertex3f(  movimento,  movimento2, -1 );
+	glVertex3f(  movimento,  movimento2 - 1, -1 );
+	glVertex3f(  movimento,  movimento2 - 1,  1 );
 	glEnd();
-	
+
 	glDeleteTextures(1, & texture1);
 	stbi_image_free(uc2);
+
+	////////////////////
+	// desenha cubos que serão eliminados conforme colisão
+
+	for(int i = 0; i < tam; i++)
+	{
+		if(blocos[i].vivo) 	//se o bloco NÃO foi tocado -> desenha
+		{
+			glPushMatrix();
+			glColor3f(0, 0, 1);
+			glTranslatef(blocos[i].x, blocos[i].y, blocos[i].z);
+			// glutSolidCube(2.0);
+			criaCubo(1.0);
+			glPopMatrix();
+		}
+	}
 
 	// Executa os comandos OpenGL
 	glutSwapBuffers();
@@ -402,31 +418,44 @@ void display(void)
 
 void Timer(int value)
 {
+	printf("\n-----\n");
+	// verificando colisao com blocos superiores
+	for(int n = 0; n < tam; n++)
+	{
+		if(blocos[n].vivo)
+		{
+			if(((float)blocos[n].x > posx-5 && (float)blocos[n].x < posx + 5) && (posy + 14) == (float)blocos[n].y && ystep > 0)
+			{
+				printf("colidiu! pos(%f, %f) - bloco(%f, %f)\n", posx, posy+14, (float)blocos[n].x, (float)blocos[n].y);
+				ystep = -ystep; //bateu no bloco, volta
+				blocos[n].vivo = false;
+				break;
+			}
+		}
+	}
+	printf("-----\n");
+
 	// Muda a direção quando chega na borda esquerda ou direita
 	if(posx > 10 || posx < -12)
 		xstep = -xstep;
 
 	// Muda a direção quando chega na borda superior ou inferior
-	if(posy > 2 || posy < -12) // limite 2 a -14
+	if(posy > 2 || posy < (float)movimento2 - 9)  // limite 2 a -14
+	{
 		ystep = -ystep;
+	}
 
 	// identifica falha na colisao com o bloco de baixo
-	if(posy <= -12 && (movimento - 1 > posx || movimento + 6 < posx))
+	if(posy <= (float)movimento2 - 9 && (movimento - 1 > posx || movimento + 6 < posx))
 	{
 		exit(0);
 	}
 
 	// identifica colisao com o bloco de baixo e conta +1 ponto
-	if(posy <= -12 && (movimento - 1 < posx && movimento + 6 > posx))
+	if(posy <= (float)movimento2 - 9 && (movimento - 1 < posx && movimento + 6 > posx))
 	{
 		PlaySound(TEXT("sound/pingpong.wav"), NULL, SND_ASYNC);  //Inicia o áudio de rebate da bola
 		ponto += 1;
-
-		// 	tentativa de deixar os movimentos aleatorios
-		// srand(time(NULL));//função para o random
-		// int valorAleatorio = rand() % 2;
-		// if(valorAleatorio == 0) xstep = -xstep;
-		// else xstep = xstep;
 	}
 
 	// Move o quadrado
@@ -457,6 +486,25 @@ int main(int argc, char** argv)
 
 	/* Funcao com alguns comandos para a inicializacao do OpenGL; */
 	init ();
+
+	// inicia blocos para colisao
+	//cria blocos
+	float x = -12.0, z = 0.0, y = 12;
+	for(int n = 0;  n < tam; n++)
+	{
+		// if(x > 5)
+		// {
+		// 	x = -2;
+			// z += 2;
+		// 	y += 3;
+		// }
+
+		blocos[n].x = x;
+		blocos[n].z = z;
+		blocos[n].y = y;
+		blocos[n].vivo = true;
+		x += 5;
+	}
 
 	/* Inicia a iluminação */
 	GLfloat light_position[] = { -1.0, 1.0, 1.0, 0.0};
