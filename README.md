@@ -11,4 +11,4 @@
 
 ## Contributors
 * [Filipe A. Sampaio](https://github.com/filipeas)
-* [Lucas Hiago]()
+* [Lucas Hiago](https://github.com/luchiago)
