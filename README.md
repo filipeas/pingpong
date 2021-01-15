@@ -10,5 +10,5 @@
 * To run the project, download the repository and run the project using an IDE. Make sure you have a gcc compiler and the GLUT library installed on your machine.
 
 ## Contributors
-(Filipe A. Sampaio)[https://github.com/filipeas]
-(Lucas Hiago)[]
+* [Filipe A. Sampaio](https://github.com/filipeas)
+* [Lucas Hiago]()
