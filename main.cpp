@@ -18,6 +18,8 @@
 #include<math.h>
 #include <ctime>
 
+#include "glm.h"
+
 #define tam 6
 
 double rotate_x = 0;
@@ -56,6 +58,29 @@ struct Bloco
 };
 
 Bloco blocos[tam];
+
+static int eixo_x = 0, eixo_y=0;
+float luzX = 0.7f, luzY = 0.75f, luzZ = 8.5f;
+GLfloat light0_position[] = {luzX, luzY, luzZ, 1.0f};
+GLMmodel * pmodel = NULL;
+
+void drawModel(void)
+{
+
+	if (!pmodel)
+	{
+		pmodel = glmReadOBJ("3d models/homem-biscoito.obj");
+		if (!pmodel)
+			exit(0);
+		glmUnitize(pmodel);
+		glmFacetNormals(pmodel);//normal do obejeto
+		glmVertexNormals(pmodel, 90.0);
+		// glmDraw(pmodel, GLM_SMOOTH | GLM_MATERIAL);
+	}
+	glmDraw(pmodel, GLM_SMOOTH | GLM_MATERIAL);
+
+
+}
 
 /* Funcao com alguns comandos para a inicializacao do OpenGL; */
 void init(void)
@@ -398,7 +423,7 @@ void display(void)
 
 	////////////////////
 	// desenha cubos que serão eliminados conforme colisão
-
+	
 	for(int i = 0; i < tam; i++)
 	{
 		if(blocos[i].vivo) 	//se o bloco NÃO foi tocado -> desenha
@@ -407,7 +432,8 @@ void display(void)
 			glColor3f(0, 0, 1);
 			glTranslatef(blocos[i].x, blocos[i].y, blocos[i].z);
 			// glutSolidCube(2.0);
-			criaCubo(1.0);
+			// criaCubo(1.0);
+			drawModel();
 			glPopMatrix();
 		}
 	}
