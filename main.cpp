@@ -69,7 +69,7 @@ void drawModel(void)
 
 	if (!pmodel)
 	{
-		pmodel = glmReadOBJ("3d models/homem-biscoito.obj");
+		pmodel = glmReadOBJ("3d models/flowers.obj");
 		if (!pmodel)
 			exit(0);
 		glmUnitize(pmodel);
@@ -85,6 +85,8 @@ void drawModel(void)
 /* Funcao com alguns comandos para a inicializacao do OpenGL; */
 void init(void)
 {
+	// PlaySound(TEXT("sound/o_povo_gosta_e_do_piseiro_eric_land_ze_vaqueiro.wav"), NULL, SND_ASYNC | SND_LOOP);
+	
 	// PlaySound(TEXT("sound/background.wav"), NULL, SND_ASYNC | SND_LOOP);  //Inicia o áudio de fundo do jogo
 	glClearColor (1.0, 1.0, 1.0, 1.0); //Limpa a tela com a cor branca;
 	glEnable(GL_DEPTH_TEST); // Habilita o algoritmo Z-Buffer
@@ -166,112 +168,6 @@ void keyboard (unsigned char key, int x, int y)
 	default:
 		break;
 	}
-}
-
-void criaCubo(float x) {
-	// Desenhas as linhas das "bordas" do cubo
-	glColor3f(0.0f, 0.0f, 0.0f);
-	glLineWidth(1.6f);
-	glBegin(GL_LINE_LOOP);	// frontal
-	glVertex3f(x, x, x);
-	glVertex3f(-x, x, x);
-	glVertex3f(-x, -x, x);
-	glVertex3f(x, -x, x);
-	glEnd();
-	glBegin(GL_LINE_LOOP);	//  posterior
-	glVertex3f(x, x, -x);
-	glVertex3f(x, -x, -x);
-	glVertex3f(-x, -x, -x);
-	glVertex3f(-x, x, -x);
-	glEnd();
-	glBegin(GL_LINES);	//  laterais
-	glVertex3f(-x, x, -x);
-	glVertex3f(-x, x, x);
-	glVertex3f(-x, -x, -x);
-	glVertex3f(-x, -x, x);
-	glVertex3f(x, x, -x);
-	glVertex3f(x, x, x);
-	glVertex3f(x, -x, -x);
-	glVertex3f(x, -x, x);
-	glEnd();
-
-	// Desenha as faces do cubo preenchidas
-	// Face frontal
-	glBegin(GL_QUADS);
-	glNormal3f(0.0, 0.0, 1.0);	// Normal da face
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(x, x, x);
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(-x, x, x);
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(-x, -x, x);
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(x, -x, x);
-	// Face posterior
-	glNormal3f(0.0, 0.0, -1.0);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, x, -x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, -x, -x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, -x, -x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, x, -x);
-
-	// Face lateral esquerda
-	glNormal3f(-1.0, 0.0, 0.0);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, x, x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, x, -x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, -x, -x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, -x, x);
-
-	// Face lateral direita
-	glNormal3f(1.0, 0.0, 0.0);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, x, x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, -x, x);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, -x, -x);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, x, -x);
-	// Face superior
-	glNormal3f(0.0, 1.0, 0.0);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, x, -x);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, x, x);
-	glColor3f(1.0f, 1.0f, 0.0f);
-	glVertex3f(x, x, x);
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glVertex3f(x, x, -x);
-
-	glNormal3f(0.0, -1.0, 0.0);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, -x, -x);
-	glTexCoord2f(1, 0); //atribui coordenada de textura ao objeto
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, -x, -x);
-	glTexCoord2f(1, 1);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(x, -x, x);
-	glTexCoord2f(0, 1);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-x, -x, x);
-	glTexCoord2f(0, 0);
-	glEnd();
 }
 
 void display(void)
@@ -431,6 +327,7 @@ void display(void)
 			glPushMatrix();
 			glColor3f(0, 0, 1);
 			glTranslatef(blocos[i].x, blocos[i].y, blocos[i].z);
+			glScaled(1.8, 1.8, 1.8);
 			// glutSolidCube(2.0);
 			// criaCubo(1.0);
 			drawModel();
@@ -452,6 +349,7 @@ void Timer(int value)
 		{
 			if(((float)blocos[n].x > posx-5 && (float)blocos[n].x < posx + 5) && (posy + 14) == (float)blocos[n].y && ystep > 0)
 			{
+				PlaySound(TEXT("sound/windowglass.wav"), NULL, SND_ASYNC);
 				printf("colidiu! pos(%f, %f) - bloco(%f, %f)\n", posx, posy+14, (float)blocos[n].x, (float)blocos[n].y);
 				ystep = -ystep; //bateu no bloco, volta
 				blocos[n].vivo = false;
