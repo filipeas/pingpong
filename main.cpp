@@ -1,10 +1,30 @@
 // *********************************************************************
-// Alunos: FILIPE ALVES SAMPAIO e LUCAS HIAGO DE MOURA VILELA
+// # Jogo Ping Pongo
+
+// # Descrição
+// * Desenvolvemos um jogo simples de ping pong cujo objetivo é arremessar a caixa a partir da base e
+// * acertar os jarros suspensos. As colisões permitidas são somente na base do jarro, ou seja, a caixa
+// * só irá quebrar o jarro se acertar exatamente na parte de baixo do jarro. Foi adicionado efeitos sonoros
+// * para deixar o jogo mais dinâmico. A cada 5 arremessos da caixa a partir da base, o arremesso da caixa
+// * fica levemente mais rápida que, com o passar do tempo, será impossível acertar a caixa na base.
+// 
+// # Descrição do desenvolvimento
+// * O jogo foi inteiramente desenvolvido em C++ utilizando as bibliotecas GLUT para os efeitos gráficos, 
+// * windows para utilizarmos a biblioteca de som do windows com facilidade, mmsystem que permite usar sons no jogo, 
+// * stb_image que faz importação de texturas e glm que importa objetos 3d no projeto.
+// 
+// # Alunos
+// * Filipe Alves Sampaio
+// * Lucas Hiago de Moura Vilela
+// 
+// *********************************************************************
+//
 // Controles (sem caps lock):
 // 'a': move para esquerda
 // 'd': move para direita
 // 'w': move para cima
 // 's': move para baixo
+// 
 // *********************************************************************
 
 #include <GL/gl.h>
