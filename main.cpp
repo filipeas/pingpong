@@ -1,7 +1,11 @@
-/**
- * Trabalho final
- * Mesa de ping pong
- */
+// *********************************************************************
+// Alunos: FILIPE ALVES SAMPAIO e LUCAS HIAGO DE MOURA VILELA
+// Controles (sem caps lock):
+// 'a': move para esquerda
+// 'd': move para direita
+// 'w': move para cima
+// 's': move para baixo
+// *********************************************************************
 
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -25,7 +29,7 @@
 double rotate_x = 0;
 double rotate_y = 0;
 
-// PosiÁ„o inicial e tamanho do quadrado respectivamente
+// Posi√ß√£o inicial e tamanho do quadrado respectivamente
 // GLfloat glx1 = 100.0f;
 // GLfloat gly1 = 150.0f;
 GLfloat posx = 0.0f;
@@ -33,8 +37,8 @@ GLfloat posy = 0.0f;
 BOOLEAN inicio = true;
 // GLsizei rsize = 20;
 
-// Tamanho do incremento nas direÁıes x e y
-// (n˙mero de pixels para se mover a cada
+// Tamanho do incremento nas dire√ß√µes x e y
+// (n√∫mero de pixels para se mover a cada
 // intervalo de tempo)
 GLfloat xstep = 1.0f;
 GLfloat ystep = -1.0f;
@@ -43,12 +47,12 @@ GLfloat ystep = -1.0f;
 GLfloat windowWidth;
 GLfloat windowHeight;
 
-// c e d rastreia o n˙mero de vezes que 'b' e 'n' s„o pressionados respectivamente
-// esquerda e direita indicam o Ìndice mais ‡ esquerda e mais ‡ direita do ret‚ngulo mÛvel
+// c e d rastreia o n√∫mero de vezes que 'b' e 'n' s√£o pressionados respectivamente
+// esquerda e direita indicam o √≠ndice mais √† esquerda e mais √† direita do ret√¢ngulo m√≥vel
 // int esquerda = -5, direita = 5, cima = 5, baixo = 5;
 int movimento = 0, movimento2 = -3, ponto = 10, velocidade = 170;
 
-// blocos para contato e colis„o
+// blocos para contato e colis√£o
 struct Bloco
 {
 	float x;
@@ -87,7 +91,7 @@ void init(void)
 {
 	// PlaySound(TEXT("sound/o_povo_gosta_e_do_piseiro_eric_land_ze_vaqueiro.wav"), NULL, SND_ASYNC | SND_LOOP);
 	
-	// PlaySound(TEXT("sound/background.wav"), NULL, SND_ASYNC | SND_LOOP);  //Inicia o ·udio de fundo do jogo
+	// PlaySound(TEXT("sound/background.wav"), NULL, SND_ASYNC | SND_LOOP);  //Inicia o √°udio de fundo do jogo
 	glClearColor (1.0, 1.0, 1.0, 1.0); //Limpa a tela com a cor branca;
 	glEnable(GL_DEPTH_TEST); // Habilita o algoritmo Z-Buffer
 
@@ -108,14 +112,14 @@ void reshape (int w, int h)
 	// Evita a divisao por zero
 	if(h == 0) h = 1;
 
-	// Especifica as dimensıes da Viewport
+	// Especifica as dimens√µes da Viewport
 	glViewport(0, 0, w, h);
 
 	// Inicializa o sistema de coordenadas
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	// Estabelece a janela de seleÁ„o (left, right, bottom, top)
+	// Estabelece a janela de sele√ß√£o (left, right, bottom, top)
 	if (w <= h)
 	{
 		windowHeight = 250.0f * h / w;
@@ -129,9 +133,9 @@ void reshape (int w, int h)
 
 	// gluOrtho2D(0.0f, windowWidth, 0.0f, windowHeight);
 	gluPerspective(60, (float)w / (float)h, 1.0, 20.0);
-	gluLookAt(0.0, 0.0, 10.0, 	// posiÁ„o da c‚mera (olho)
+	gluLookAt(0.0, 0.0, 10.0, 	// posi√ß√£o da c√¢mera (olho)
 			  0.0, 0.0, 0.0, 	// centro da cena
-			  0.0, 1.0, 0.0); // direÁ„o de cima
+			  0.0, 1.0, 0.0); // dire√ß√£o de cima
 	glMatrixMode (GL_MODELVIEW);
 }
 
@@ -189,11 +193,11 @@ void display(void)
 	// glMatrixMode(GL_MODELVIEW);
 	// glLoadIdentity();
 
-	// Limpa a janela de visualizaÁ„o com a cor de fundo especificada
+	// Limpa a janela de visualiza√ß√£o com a cor de fundo especificada
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Limpa o Buffer de Cores
 	glLoadIdentity();
 
-	// Especifica que a cor corrente È vermelha
+	// Especifica que a cor corrente √© vermelha
 	//         R     G     B
 	glColor3f(1.0f, 0.0f, 0.0f);
 
@@ -318,11 +322,11 @@ void display(void)
 	stbi_image_free(uc2);
 
 	////////////////////
-	// desenha cubos que ser„o eliminados conforme colis„o
+	// desenha cubos que ser√£o eliminados conforme colis√£o
 	
 	for(int i = 0; i < tam; i++)
 	{
-		if(blocos[i].vivo) 	//se o bloco N√O foi tocado -> desenha
+		if(blocos[i].vivo) 	//se o bloco N√ÉO foi tocado -> desenha
 		{
 			glPushMatrix();
 			glColor3f(0, 0, 1);
@@ -359,11 +363,11 @@ void Timer(int value)
 	}
 	printf("-----\n");
 
-	// Muda a direÁ„o quando chega na borda esquerda ou direita
+	// Muda a dire√ß√£o quando chega na borda esquerda ou direita
 	if(posx > 10 || posx < -12)
 		xstep = -xstep;
 
-	// Muda a direÁ„o quando chega na borda superior ou inferior
+	// Muda a dire√ß√£o quando chega na borda superior ou inferior
 	if(posy > 2 || posy < (float)movimento2 - 9)  // limite 2 a -14
 	{
 		ystep = -ystep;
@@ -378,7 +382,7 @@ void Timer(int value)
 	// identifica colisao com o bloco de baixo e conta +1 ponto
 	if(posy <= (float)movimento2 - 9 && (movimento - 1 < posx && movimento + 6 > posx))
 	{
-		PlaySound(TEXT("sound/pingpong.wav"), NULL, SND_ASYNC);  //Inicia o ·udio de rebate da bola
+		PlaySound(TEXT("sound/pingpong.wav"), NULL, SND_ASYNC);  //Inicia o √°udio de rebate da bola
 		ponto += 1;
 	}
 
@@ -430,7 +434,7 @@ int main(int argc, char** argv)
 		x += 5;
 	}
 
-	/* Inicia a iluminaÁ„o */
+	/* Inicia a ilumina√ß√£o */
 	GLfloat light_position[] = { -1.0, 1.0, 1.0, 0.0};
 	GLfloat light_color[] = {1.0, 1.0, 1.0, 0.0};
 	glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, light_color);
@@ -438,7 +442,7 @@ int main(int argc, char** argv)
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
-	/* Inicia as caracterÌsticas gerais dos materiais */
+	/* Inicia as caracter√≠sticas gerais dos materiais */
 	GLfloat mat_ambient_diffuse[] = {1.0, 1.0, 1.0, 1.0};
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_ambient_diffuse);
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
@@ -447,7 +451,7 @@ int main(int argc, char** argv)
 	/* Ativa o modelo de sombreagem de "Gouraud". */
 	glShadeModel(GL_SMOOTH);
 
-	/* define as funcıes de callback */
+	/* define as func√µes de callback */
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyboard);
